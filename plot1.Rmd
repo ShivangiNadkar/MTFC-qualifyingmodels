@@ -1,0 +1,51 @@
+---
+title: "Untitled"
+author: "Shivangi Nadkar"
+date: "2022-11-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+library(ggthemes)
+```
+
+```{r}
+data<-read_xlsx(path = "MTFCdata.xlsx")
+#import data
+```
+
+```{r}
+filtered<-data|>
+  mutate(`Cause of Death`= ifelse(`Cause of Death` ==
+                                    "Diseases of heart (I00-I09,I11,I13,I20-I51)", "Heart Diseases", `Cause of Death`))|>
+  mutate(`Cause of Death`= ifelse(`Cause of Death` ==
+                                    "Malignant neoplasms (C00-C97)", "Cancer", `Cause of Death`))|>
+  mutate(`Cause of Death`= ifelse(`Cause of Death` ==
+                                    "Accidents (unintentional injuries) (V01-X59,Y85-Y86)", "Accidents", `Cause of Death`))|>
+  mutate(`Cause of Death`= ifelse(`Cause of Death` ==
+                                    "Chronic lower respiratory diseases (J40-J47)", "Respiratory Diseases", `Cause of Death`))|>
+  mutate(`Cause of Death`= ifelse(`Cause of Death` ==
+                                    "Cerebrovascular diseases (I60-I69)", "Cerebrovascular diseases", `Cause of Death`))|>
+  mutate(`Cause of Death`= ifelse(`Cause of Death` ==
+                                    "Influenza and pneumonia (J09-J18)", "Flu and pneumonia", `Cause of Death`))|>
+  filter(Year == 2016)|>
+  group_by(`Cause of Death`)|>
+  summarize(Sum_deaths = sum(Deaths))|>
+  arrange(desc(Sum_deaths))
+
+CoD<-head(filtered)
+
+```
+
+```{r}
+CoD|>
+  ggplot(aes(x = reorder(`Cause of Death`, - Sum_deaths), y = Sum_deaths)) +
+  geom_bar(stat = "identity")+
+  theme(axis.text.x = element_text(angle = 20, vjust = 1, hjust=0.8)) +
+  labs(y = "Number of Deaths",
+       x = "Cause of Death",
+       caption = "Centers for Disease Control and Prevention")
+```
