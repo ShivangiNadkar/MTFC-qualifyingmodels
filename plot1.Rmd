@@ -13,12 +13,7 @@ library(ggthemes)
 ```
 
 ```{r}
-data<-read_xlsx(path = "MTFCdata.xlsx")
-#import data
-```
-
-```{r}
-filtered<-data|>
+data<-read_xlsx(path = "MTFCdata.xlsx") |>
   mutate(`Cause of Death`= ifelse(`Cause of Death` ==
                                     "Diseases of heart (I00-I09,I11,I13,I20-I51)", "Heart Diseases", `Cause of Death`))|>
   mutate(`Cause of Death`= ifelse(`Cause of Death` ==
@@ -30,7 +25,12 @@ filtered<-data|>
   mutate(`Cause of Death`= ifelse(`Cause of Death` ==
                                     "Cerebrovascular diseases (I60-I69)", "Cerebrovascular diseases", `Cause of Death`))|>
   mutate(`Cause of Death`= ifelse(`Cause of Death` ==
-                                    "Influenza and pneumonia (J09-J18)", "Flu and pneumonia", `Cause of Death`))|>
+                                    "Influenza and pneumonia (J09-J18)", "Flu and pneumonia", `Cause of Death`))
+#import data
+```
+
+```{r}
+filtered<-data|>
   filter(Year == 2016)|>
   group_by(`Cause of Death`)|>
   summarize(Sum_deaths = sum(Deaths))|>
